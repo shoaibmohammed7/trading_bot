@@ -2,16 +2,21 @@ import { useState, useCallback } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { TriggerSheet } from './TriggerSheet';
+import { PriceTrigger } from './nodes/triggers/PriceTrigger';
+import { Timer } from './nodes/triggers/Timer';
+
+const nodeTypes= {
+  "price-trigger": PriceTrigger,
+  "timer": Timer
+}
 
 
-
-export type NodeKind = "timer-based" | "price-trigger" | "lighweight" | "hyperliquid" | "backpack"
+export type NodeKind = "timer" | "price-trigger" | "lighweight" | "hyperliquid" | "backpack"
 
 interface NodeType{
-    data:{
-        type: "action" | "trigger",
-        kind : NodeKind
-        label: string,
+  type:NodeKind,  
+  data:{
+        kind : "action" | "trigger"
         metadata:NodeMetadata
 
     },
@@ -45,19 +50,19 @@ export default function CreatWorkFlow() {
  
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
-      {!nodes.length && <TriggerSheet onSelect={(kind, metadata)=> {
+      {!nodes.length && <TriggerSheet onSelect={(type, metadata)=> {
         setNodes([...nodes,{
           id:Math.random().toString(),
+          type,
           data:{
-            type:"trigger",
-            kind,
+            kind:"trigger",
             metadata,
-            label :kind
           },
           position: {x:0, y:0}
         }])
       }}/>}
       <ReactFlow
+        nodeTypes={nodeTypes}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
